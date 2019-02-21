@@ -1,0 +1,278 @@
+一.vue 框架
+  1.定义：是一个数据驱动的mvvm框架，专门用于构建用户界面的渐进式框架，轻量级框架，本身提供的功能非常少，当你须要的功能逐渐逐渐往里面加。  
+     ***常用方法：（1）arr.froEach((n)=>{console.log(n)})【便利循环】
+                  （2）var newArr=arr.map((n)=>{return n*n})【映射】
+                  （3）var result=arr.filter((n)=>{return n>3}).includes(模糊查找)【过滤】
+  2.下载
+    （1） cnpm init -y 初始化
+    （2） cnpm i vue --save 下载vue
+    （3） 找到dist里面的vue.js文件 放在js文件中，并且要引入要用的文件中。
+    （4） 创建一个 new Vue({ 【新建一个构造函数】
+                     el:"指定的区域"，
+                     data：{存放的数据}，
+                    methods：{存放方法的地方}，
+                    computed:{计算属性}                  
+ 
+               }) 
+ 二.vue组件的使用
+   1.全局组件
+       Vue.component("组件的名字"，{
+       template:"模板" //必须有个根文件<div></div>
+   
+     })
+   2.局部注册组件
+       var 组件的名字={
+              template："模板"，模板里不能只有字符，必修有标签，标签根元素只有一个  <div><div></div><div></div></div>,
+               data(){
+                    return{
+                        数据 //每个组件的实例数据是独立的
+                     }
+                  }
+           }
+        在父组件的实列注册
+       components：{组件的名字}
+
+
+三.父子组件传值（【父->子】,【子->父】）
+  1.父->子
+   （1）父组件传值：v-bind：属性="值" 值绑定可以有各种类型，不绑定只能是字符串类型
+        【****v-bind 绑定可以识别数据类型】
+   （2）子组件接收值：用porps接收父组件的值，且有两种接收方式
+      @props：['n'](数组的接受的形式)且只能是字符串
+      @props：{n:number}(指定传过来的数据类型)
+   （3）父->子的值不可以更改，因为是单向数据流
+
+  2.子->父
+     （1）this.$emit("事件的名字"，传给父组件的数据)【this.$emit（child，‘我是谁’）】
+     （2）在父组件里面 监听 v-on：事件的名字="事件处理函数"【v-on:child="reaceive"】
+     （3）在父组件的methods：事件处理函数（参数就是自居将传递过来的值）【reactive(n){进行处理}】
+     （4）处理函数
+
+四.动态组件
+    （1）在父组件中的data数据中，定义变量名：组件名
+    （2）在el的指定区域box中<component :is="组件名字的变量名"></component>
+    （3）v-bind:is="变量名"
+    （4）@click="变量名"="组件名" （就可以进行切换）
+    （5）如果组件切换时要进行缓存，要用keep-alive把component包裹起来
+五.兄弟组件传值
+     (1)先传给父组件用方法接受，在传给另一个兄弟组件，用props接受
+    （2）bus.$emit("事件名字"，"数据")
+六.生命周期钩子函数（一共四对函数）
+ （1）beforeCreate 在实列创建之前调用 初始化 访问不到数据
+ （2）create 在实列创建之后调用，能访问到数据，但是对数据更改不会触发beforUpdate,Updated函数
+  
+  (1)beforeMount 节点挂载在以前。能访问到数据.虚拟dom,编译模板已经结束，但是数据不会更改beforeUpdate,Updated这样的钩子函数
+  (2)mounted 节点挂载以后，能访问数据，可以操作真实的dom元素存在，能触发beforeUpdate,Updated这个钩子函数
+     *** ref."节点名"（标识节点）
+     *** this.$refs."节点名字" （获取节点名字）（ref的值必须是唯一的跟id名一样）
+     ***  ref父组件调用子组件的方法：在子组件中ref="标识的组件名字"，在父组件中，created中{this.$refs.表示的组件名字.方法名}
+     ***  子组件调用父组件的方法： this.$parent.父组件的方法名
+
+ （1）beforUpdate 数据更新之前。监控页面上所有的数据
+ （2）Updated     数据更新之后。在这个函数中谨慎使用更新数据，会造成死循环。
+
+ （1）beforDestory:实列销毁之前 自动调用 清理非vue的资源
+ （2）destoryed：实列销毁之后 自动调用 this.$destory 撤销组件
+
+ ***watch 监听特定值的变化  只能监控函数 值(){不能监控对象}
+       watch:{
+           coor(新值，旧值){ 
+           
+           }
+         }
+ ***监控对象，要用深度监控，并且要用对象语法
+      color:{
+            handler（新值，旧值）{
+             
+         },
+          deep:true //深度监控
+          immediate:true //立即监控
+    }
+七.插槽（分为三种，匿名插槽，具名插槽，作用域插槽）
+     (1) 匿名插槽）：<slot></slot>
+    （2）具名插槽）：<slot name="名字"></slot> 
+                 <组件><标签 slot="插槽的名字"></标签></组件>
+    （3）作用域插槽：带数据的插槽 子组件像父组件传值
+            传递数据方式：<slot :c="111"></slot>
+            接收数据：<组件>
+                      <标签 slot-scope="a">{{a.c}}->获取值</标签>
+                       </组件>
+
+八.vue脚手架（spA 单页应用程序） webapp 借助浏览器跑的项目
+ 1.安装需要的步骤 
+ （1）安装  cnpm i vue-cli -g 全局安装，安装一次就行了
+ （2）vue -V 查看版本号
+ （3）vue init webpack （下载脚手架）俗称建立项目
+ （4）cnpm i (下载依赖)
+ （5）npm run dev 项目跑起来 
+ （6） npm run build 打包文件
+ 2.脚手架环境介绍和使用（vue是单文件组件）
+  1. 分为：（1）template（组件渲染的内容）
+           （2）script (获取数据和方法，所有的操作都在这里面执行)
+           （3）style （写样式）
+
+九.axios 向服务后端（node.js）获取数据 （设置允许跨域 cors跨域的方式，后端要设置请求头）
+  （1） cnpm i axios --save
+   (2) axios.get("后端数据接口和网络端口地址").then((res)=>{
+            console.log(res)//数据
+        })
+  (3) 要在router.get中设置
+         res.setHeader("Access-Control-Allow-Origin","*");
+
+十.josn-server 第三方抓取数据工具，自动设置好了允许跨域
+    （1）安装下载
+         cnpm i json-server -g //全局安装一次就行了
+         json-server --version //查看版本号
+    （2）json-server xx.json  //可以得到一个数据接口
+    （3）axios.get("http:localhost:3000/data").then((res)=>{
+              this.list(list在data中建立的数组)=res.data
+        })
+十一.axios.post 提交数据
+       （1）建立一个input 输入框 绑定v-model="str" @keyup="add"
+        （2）在methdos：{
+               getdata(){
+                  axios.get("http:localhost:3000/data").then((res)=>{
+                   this.list(list在data中建立的数组)=res.data
+                     })
+                     },
+
+               add(){
+                  axios.post("http:localhost:3000/list"，
+                  {"name"(获去数据的变量名):this.str（str在data中建立的空字符串},
+                  {headers:{"content-type":'application/json'}
+                  }).then((res)=>{ this.getdata() })
+                   this.str=""(清空数据input中的数据)
+                }
+               
+              }
+
+十二.vue-router vue路由(手写路由)
+     ***** vue路由[简称前端路由：根据不同的url(hash)切换不同的组件].
+     ***** node.js中的为后端路由:[根据不同的请求返回不同的数据]
+   1.安装下载
+     （1） cnpm i vue-router --save 
+     （2） 在main.js中引入 import 变量名 from 'vue-router'->固定写法
+     （3） 全局注册 Vue.use(VueRouter)
+      (4) 实例化 var router=new VueRouter({
+                routers:[
+                   path:'/路径'，
+                   component：组件的名字
+                 ]
+        })
+     （5）在vue实列化中注册
+            new vue({
+                    router(固定):router（实例化中的变量名）        
+          })
+           
+     （6）在组件app.vue中写
+           <router-view/>
+           <router-link to='/路径'></router-link>
+      注意：上述代码最好不要写在main.js文件中，所以要在src中新增一个router文件放入index.js文件。将上述代码搬到此文件中
+
+
+十三 vue-router （自动路由）
+      (1) vue init webpack(在 vue-router的时候要写yes)
+      (2) cnpm i  下载依赖
+     （3）所有组件引入都在 router中的index.js文件中进行操作而且路径可写‘@/component/组件名字’@作用：只要是在src文件下都可以随便使用
+     （4）在 要使用的组件中写 <router-view>和<router-link>
+   
+十四 监听hash值变化
+   （1） 用hashchange事件:监听has变化
+   （2）用 location.hash ：得到hash值 
+
+十五.路由的两种模式
+  （1）hash 模式 是以“#”开头的 默认模式
+  （2）history模式 是以“/ ”开头的
+   (3)使用方式 mode:"hash"或者 mode："history"
+
+十六.路由的重定向和子路由和404页面
+   （1）重定向：{ path：‘/’,
+                   redirect:{"name":"路由的名字"}
+                  }
+   （2）子路由：children:[{
+                      path:'匹配父路由的路径/子路由的路径'，
+                      component:'子路由的名字'
+                }]
+   （3）404页面：{
+                   path："**"，
+                   component：组件的名字
+             }
+     ***注意：404页面要放在最后面。
+
+十七.动画的六个类
+    *** 要用 <transtion mode="out-in(先退出在进入)"><router-view></transtion>包裹起来
+   1.动画进入的状态
+    (1) v-enter {动画开始的初始位置}
+    (2) v-enter-active {动画进入过度时间，延迟和曲线}
+   （3）v-enter-to {在过渡动画完成之后移出回到开始位置，默认可不写}
+
+   2.动画离开时的状态
+   （1）v-leave {定义离开时的初始位置}
+   （2）v-leave-active {定义离开过度时间,延迟和曲线}
+   （3）v-leave-to {回到离开前的初始位置，默认可以不写}
+   
+   3.利用animate.css 插件做动画
+       （1）官网下载文件，放入sratic文件中
+       （2）在index.html中引入文件
+       （3）<transtion enter-active-class（进入是的动画）=" animated 动画样式" leave-active-class(离开时的动画)="animated 动画样式" mode="out-in"(进场顺序)> <router-view></transtion>
+       （4）修改动画过度时间 animated{ -webkit-animated-duration: 时间}
+十八.静态资源处理
+      1.static :是一个静态资源的目录，不参与打包
+          当静态资源路径是变量的时候。一定要把静态资源放在static下面
+      2. 图片放在static文件中，把图片路径变成变量。可以出来的。但是在其他文件中显示不出来。且不参与打包    
+
+十九.真机测试
+       （1）装一个wift 
+        （2）找到config 文件中的index.js文件host的地址改成0.0.0.0
+
+二十.路由传参
+     （1） path:'/路径/:路由参数 '列子:{path:'/list/:type'}
+      (2)  组件里使用：<router-link to='/路径/路由参数的具体值'></router-link>
+      (3) 接收路由参数： 在created的中 使用 this.$router.params.路由参数
+           当路由参数切换的时候，组件没有重新加载。只能拿到一次参数
+     （4） 解决方法： watch：{
+                           $route:{
+                             hadler(n){
+                             this.type=n.params.type;
+                        },
+                         immediate:true;
+                      }
+                    }
+ 
+二十一.导航守卫 （路由的钩子函数）表示路由正在发生改变
+    1.全局守卫：每个路由自动切换的时候都会自动调用这个函数。对每个路由都生效
+      （1）beforEach 在进入之前使用(三个参数：to,from,next)
+            @使用： router.beforEach 
+            @在组件中使用： this.$router.beforEach
+            *to: route即将要进入目标路由
+            *from：route当前导航要离开的路由
+            *next：决定路由时候跳转，next（'/'）或者next({path:'/'});跳转到一个不同的地址
+
+      （2）afterEach 在进入之后使用（两个参数：to, from）
+            *to: route即将要进入目标路由
+            *from：route当前导航要离开的路由
+
+      (3)路由元信息（在全局守卫中进行判断真假）    
+           meta：{
+               变量名：true
+         }     
+ 2.路由独享守卫（路由进行当中，对一个路由进行控制）
+      beforeEnter：在路由上配置上直接 beforeEnter(to from next){进行操作}
+             
+ 3.组件内的守卫
+    1.beforRouterEnter(to from next){
+       (1)访问不到数据，因为他要比beforCrate执行要早
+      （2）可利用回调函数拿到数据 next((vm)=>{console.log(vm.type=this.$router.params.type)})
+       (3)记住一定要写next();
+       }
+    2.beforRouterUpdate(to from next){
+      (1)可以访问实列
+     （2）在当前路由改变,但是该组件被服用时调用
+     （3）带有动态参数的路径
+     （4）会渲染相同的for组件,因此组件实列会被复用，而这个钩子就会在这个情况不被调用   
+        
+       }
+    3.beforRouterLeave(to from next){
+         (1)导航离开组件的对应路由时调用
+        （2）可以访问组件的实列“this”
+        }
